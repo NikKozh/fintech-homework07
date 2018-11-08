@@ -61,6 +61,36 @@ object Sorting {
       sort(0, arr.length)
   }
 
-//  def quickSort(???)
+  def quickSort[T](arr: ArrayBuffer[T])(implicit ord: Ordering[T]): Unit = {
+    def swap(i: Int, j: Int): Unit = {
+      val tmp = arr(i)
+      arr(i) = arr(j)
+      arr(j) = tmp
+    }
 
+    def sort(begin: Int, end: Int): Unit = {
+      import scala.util.Random
+
+      val pivot = arr(begin + Random.nextInt(end - begin))
+      var leftIt = begin
+      var rightIt = end
+
+      do {
+        while (ord.compare(arr(leftIt),  pivot) < 0) leftIt  += 1
+        while (ord.compare(arr(rightIt), pivot) > 0) rightIt -= 1
+
+        if (leftIt <= rightIt) {
+          swap(leftIt, rightIt)
+          leftIt  += 1
+          rightIt -= 1
+        }
+      } while (leftIt <= rightIt)
+
+      if (rightIt > begin) sort(begin, rightIt)
+      if (leftIt  < end)   sort(leftIt, end)
+    }
+
+    if (arr.length > 1)
+      sort(0, arr.length - 1)
+  }
 }
