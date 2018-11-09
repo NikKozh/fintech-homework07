@@ -6,24 +6,25 @@ package fintech.homework07
   */
 
 object Sorting {
-  import scala.collection.mutable.ArrayBuffer
-  import scala.reflect.ClassTag
+  type MIndexedSeq[T] = scala.collection.mutable.IndexedSeq[T]
 
-  def mergeSort[T: ClassTag](arr: ArrayBuffer[T])(implicit ord: Ordering[T]): Unit = {
+  def mergeSort[T](arr: MIndexedSeq[T])(implicit ord: Ordering[T]): Unit = {
     def sort(left: Int, right: Int): Unit = {
       // merge я решил поместить на ещё один вложенный уровень в sort, чтобы избежать
       // ненужной, по сути, передачи аргументов left и right
       def merge(middle: Int): Unit = {
+        import scala.collection.mutable.ArrayBuffer
+
         var resIt = 0
         var leftIt = 0
         var rightIt = 0
 
         val leftLength = middle - left
         val rightLength = right - middle
-        val result: Array[T] = new Array[T](right - left)
+        val result = new ArrayBuffer[T]()
 
         while (leftIt < leftLength && rightIt < rightLength) {
-          result(resIt) =
+          result += {
             if (ord.compare(arr(left + leftIt), arr(middle + rightIt)) < 0) {
               leftIt += 1
               arr(left + leftIt - 1)
@@ -31,16 +32,17 @@ object Sorting {
               rightIt += 1
               arr(middle + rightIt - 1)
             }
+          }
           resIt += 1
         }
 
         while (leftIt < leftLength) {
-          result(leftIt + rightIt) = arr(left + leftIt)
+          result += arr(left + leftIt)
           leftIt += 1
         }
 
         while (rightIt < rightLength) {
-          result(leftIt + rightIt) = arr(middle + rightIt)
+          result += arr(middle + rightIt)
           rightIt += 1
         }
 
@@ -61,7 +63,7 @@ object Sorting {
       sort(0, arr.length)
   }
 
-  def quickSort[T](arr: ArrayBuffer[T])(implicit ord: Ordering[T]): Unit = {
+  def quickSort[T](arr: MIndexedSeq[T])(implicit ord: Ordering[T]): Unit = {
     def swap(i: Int, j: Int): Unit = {
       val tmp = arr(i)
       arr(i) = arr(j)
